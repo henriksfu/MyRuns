@@ -14,7 +14,6 @@
 
         <!-- Input Type Label -->
         <TextView
-            android:id="@+id/input_type_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Input Type"
@@ -24,7 +23,7 @@
 
         <!-- Input Type Spinner -->
         <Spinner
-            android:id="@+id/input_type_spinner"
+            android:id="@+id/spinner_input_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/ui_input_type_spinner"
@@ -32,7 +31,6 @@
 
         <!-- Activity Type Label -->
         <TextView
-            android:id="@+id/activity_type_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Activity Type"
@@ -42,7 +40,7 @@
 
         <!-- Activity Type Spinner -->
         <Spinner
-            android:id="@+id/activity_type_spinner"
+            android:id="@+id/spinner_activity_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/ui_activity_type_spinner"
@@ -50,13 +48,14 @@
 
         <!-- Start Button -->
         <Button
+            android:id="@+id/start_button"
             android:layout_width="220dp"
             android:layout_height="wrap_content"
             android:text="START"
             android:textAllCaps="true"
-            android:onClick="onStartButtonClicked"
             android:layout_gravity="center"
-            android:layout_marginTop="60dp" />
+            android:layout_marginTop="40dp" />
 
     </LinearLayout>
+
 </FrameLayout>

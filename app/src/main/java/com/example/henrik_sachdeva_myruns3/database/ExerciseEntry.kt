@@ -1,37 +1,44 @@
 package com.example.henrik_sachdeva_myruns3.database
 
-import android.icu.text.SimpleDateFormat
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 
 @Entity(tableName = "exercise_table")
 data class ExerciseEntry(
+
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
+    var id: Long = 0L,
 
-    // 0 = Manual Input, 1 = GPS, 2 = Automatic
-    val inputType: Int,
+    var inputType: Int = 0,
+    var activityType: Int = 0,
 
-    val activityType: Int,
+    var dateTime: Date = Date(),
 
-    val dateTime: Calendar,
+    var duration: Int = 0,            // seconds
+    var distance: Double = 0.0,       // km
+    var avgSpeed: Double = 0.0,       // km/h
+    var currentSpeed: Double = 0.0,   // km/h
+    var calories: Int = 0,
+    var heartRate: Int = 0,
 
-    val duration: Double,      // minutes
-    val distance: Double,      // miles
-    val calories: Double,
-    val heartRate: Double,
-    val comment: String,
+    var comment: String = "",
 
-    // ⭐ NEW FOR MYRUNS4 ⭐
-    // Stored as JSON string of LatLng points. Example: "[[lat,lon],[lat,lon],...]"
-    val gpsData: String? = null
+    // ⭐ GPS path stored as JSON string instead of MutableList<LatLng>
+    var gpsJson: String = "[]"
 ) {
 
-    fun getFormattedDateTime(): String {
-        val formatter = SimpleDateFormat("EEE, MMM d, yyyy h:mm a", Locale.getDefault())
-        return formatter.format(dateTime.time)
+    fun formattedDateTime(): String {
+        return java.text.SimpleDateFormat(
+            "EEE, MMM d, yyyy h:mm a",
+            Locale.getDefault()
+        ).format(dateTime)
+    }
+
+    fun formattedDuration(): String {
+        val mins = duration / 60
+        val secs = duration % 60
+        return "$mins mins $secs secs"
     }
 
     fun getEntryTypeString(): String {
@@ -61,12 +68,6 @@ data class ExerciseEntry(
             13 -> "Other"
             else -> "Unknown"
         }
-    }
-
-    fun getFormattedDuration(): String {
-        val mins = duration.toInt()
-        val secs = ((duration - mins) * 60).toInt()
-        return "${mins} mins ${secs} secs"
     }
 
     companion object {

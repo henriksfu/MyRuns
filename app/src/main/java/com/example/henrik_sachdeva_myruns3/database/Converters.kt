@@ -1,29 +1,42 @@
 package com.example.henrik_sachdeva_myruns3.database
 
 import androidx.room.TypeConverter
-import java.util.Calendar
+import com.google.android.gms.maps.model.LatLng
+import java.util.Date
 
-/**
- * Utility converters used by Room to store and retrieve unsupported data types.
- */
 class Converters {
 
+    // ----------------------------
+    // DATE ↔ TIMESTAMP
+    // ----------------------------
     @TypeConverter
-    fun fromTimestamp(timestamp: Long?): Calendar? {
-        // Convert stored milliseconds back to a Calendar instance
-        return timestamp?.let {
-            Calendar.getInstance().apply { timeInMillis = it }
-        }
+    fun fromTimestamp(value: Long?): Date? {
+        return value?.let { Date(it) }
     }
 
     @TypeConverter
-    fun calendarToTimestamp(calendar: Calendar?): Long? {
-        // Store calendar time as milliseconds
-        return calendar?.timeInMillis
+    fun dateToTimestamp(date: Date?): Long? {
+        return date?.time
     }
 
-    companion object {
-        // Helper conversion for distance (not used by Room directly)
-        fun milesToKilometers(miles: Double): Double = miles * 1.60934
+    // ----------------------------
+    // GPS LIST ↔ STRING
+    // ----------------------------
+    @TypeConverter
+    fun fromLatLngList(list: List<LatLng>?): String {
+        if (list == null) return ""
+        return list.joinToString(";") { "${it.latitude},${it.longitude}" }
+    }
+
+    @TypeConverter
+    fun toLatLngList(data: String?): MutableList<LatLng> {
+        if (data.isNullOrEmpty()) return mutableListOf()
+
+        return data.split(";").map { pair ->
+            val parts = pair.split(",")
+            val lat = parts[0].toDouble()
+            val lon = parts[1].toDouble()
+            LatLng(lat, lon)
+        }.toMutableList()
     }
 }

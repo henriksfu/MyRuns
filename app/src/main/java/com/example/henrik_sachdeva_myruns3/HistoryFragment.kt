@@ -25,16 +25,18 @@ class HistoryFragment : Fragment(), OnEntryClickListener {
         val view = inflater.inflate(R.layout.fragment_history, container, false)
         val recycler = view.findViewById<RecyclerView>(R.id.recycler_view)
 
-        val db = ExerciseEntryDatabase.getInstance(requireContext()).exerciseEntryDatabaseDao
-        val repo = ExerciseRepository(db)
-        val factory = ExerciseViewModelFactory(repo)
+        // FIX: call the DAO getter as a function
+        val dao = ExerciseEntryDatabase.getInstance(requireContext()).exerciseEntryDatabaseDao()
 
+        val repo = ExerciseRepository(dao)
+        val factory = ExerciseViewModelFactory(repo)
         viewModel = ViewModelProvider(this, factory)[ExerciseViewModel::class.java]
 
         adapter = ExerciseEntryListAdapter(this, requireContext())
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
+        // Observe database updates
         viewModel.allEntries.observe(viewLifecycleOwner) { list ->
             adapter.submitList(list)
         }
@@ -45,8 +47,21 @@ class HistoryFragment : Fragment(), OnEntryClickListener {
     override fun onEntryClick(entry: ExerciseEntry) {
         Log.d("HistoryFragment", "Clicked entry: ${entry.id}")
 
-        val intent = Intent(requireContext(), EntryActivity::class.java)
-        intent.putExtra("ENTRY_ID", entry.id)
-        startActivity(intent)
+        when (entry.inputType) {
+
+            ExerciseEntry.INPUT_TYPE_MANUAL -> {
+                val intent = Intent(requireContext(), EntryActivity::class.java)
+                intent.putExtra("ENTRY_ID", entry.id)
+                startActivity(intent)
+            }
+
+            ExerciseEntry.INPUT_TYPE_GPS,
+            ExerciseEntry.INPUT_TYPE_AUTOMATIC -> {
+                val intent = Intent(requireContext(), MapActivity::class.java)
+                intent.putExtra("mode", "history")
+                intent.putExtra("entry_id", entry.id)
+                startActivity(intent)
+            }
+        }
     }
 }

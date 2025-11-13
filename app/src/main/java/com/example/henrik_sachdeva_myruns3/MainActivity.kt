@@ -34,9 +34,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
     private lateinit var sharedPreferences: SharedPreferences
+
     private lateinit var tempImgUri: Uri
     private lateinit var newImgUri: Uri
-    private lateinit var selectedImageUri: Uri
+    private var selectedImageUri: Uri? = null
+
     private lateinit var cameraResult: ActivityResultLauncher<Intent>
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
 
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize UI components
+        // ----- UI bindings -----
         imageProfile = findViewById(R.id.imageProfile)
         photoButton = findViewById(R.id.photoButton)
         editName = findViewById(R.id.editName)
@@ -60,44 +62,60 @@ class MainActivity : AppCompatActivity() {
         editMajor = findViewById(R.id.editMajor)
         saveButton = findViewById(R.id.saveButton)
         cancelButton = findViewById(R.id.cancelButton)
+
         sharedPreferences = getSharedPreferences("appPrefs", MODE_PRIVATE)
 
+        // Permissions for camera / storage
         Util.checkPermissions(this)
 
-        // Prepare image storage and file URIs
+        // ----- File setup -----
         val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.apply {
             if (!exists()) mkdirs()
         }
+
         val profilePicFile = File(storageDir, fileName)
         val newImageFile = File(storageDir, "new_pic.jpg")
 
-        tempImgUri = FileProvider.getUriForFile(this, "com.example.myruns3.fileprovider", profilePicFile)
-        newImgUri = FileProvider.getUriForFile(this, "com.example.myruns3.fileprovider", newImageFile)
+        // IMPORTANT: authority must match your package name + ".fileprovider"
+        tempImgUri = FileProvider.getUriForFile(
+            this,
+            "com.example.henrik_sachdeva_myruns3.fileprovider",
+            profilePicFile
+        )
+        newImgUri = FileProvider.getUriForFile(
+            this,
+            "com.example.henrik_sachdeva_myruns3.fileprovider",
+            newImageFile
+        )
 
-        // Load saved data if available
+        // ----- Load saved profile if exists -----
         saveCheck = sharedPreferences.getInt("saveCheck", 0)
         if (saveCheck == 1) loadSavedData()
 
-        // Register camera and gallery launchers
-        cameraResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val bitmap = Util.getBitmap(this, newImgUri)
-                imageProfile.setImageBitmap(bitmap)
-                picOption = 1
+        // ----- Activity result launchers -----
+        cameraResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    val bitmap = Util.getBitmap(this, newImgUri)
+                    imageProfile.setImageBitmap(bitmap)
+                    picOption = 1
+                }
             }
-        }
 
-        galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val data = result.data
-                selectedImageUri = data?.data ?: Uri.EMPTY
-                val bitmap = Util.getBitmap(this, selectedImageUri)
-                imageProfile.setImageBitmap(bitmap)
-                picOption = 2
+        galleryLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    val data = result.data
+                    selectedImageUri = data?.data
+                    selectedImageUri?.let { uri ->
+                        val bitmap = Util.getBitmap(this, uri)
+                        imageProfile.setImageBitmap(bitmap)
+                        picOption = 2
+                    }
+                }
             }
-        }
 
-        // Allow user to choose between camera or gallery
+        // ----- Photo button -----
         photoButton.setOnClickListener {
             val options = arrayOf("Open Camera", "Select from Gallery")
             AlertDialog.Builder(this)
@@ -107,20 +125,21 @@ class MainActivity : AppCompatActivity() {
                         0 -> openCamera()
                         1 -> openGallery()
                     }
-                }.show()
+                }
+                .show()
         }
 
-        // Save profile data and image
+        // ----- Save button -----
         saveButton.setOnClickListener {
             when (picOption) {
-                1 -> copyFile(newImgUri, profilePicFile) // Camera photo
-                2 -> copyFile(selectedImageUri, profilePicFile) // Gallery photo
+                1 -> copyFile(newImgUri, profilePicFile)              // Camera photo
+                2 -> selectedImageUri?.let { copyFile(it, profilePicFile) } // Gallery photo
             }
             saveData()
             finish()
         }
 
-        // Cancel and close activity
+        // ----- Cancel button -----
         cancelButton.setOnClickListener { finish() }
     }
 
@@ -149,9 +168,12 @@ class MainActivity : AppCompatActivity() {
         editTextPhone.setText(sharedPreferences.getString("phone", ""))
         editClass.setText(sharedPreferences.getString("class", ""))
         editMajor.setText(sharedPreferences.getString("major", ""))
-        setRadioGroupSelection(radioGroupGender, sharedPreferences.getString("selectedGender", ""))
+        setRadioGroupSelection(
+            radioGroupGender,
+            sharedPreferences.getString("selectedGender", "")
+        )
 
-        val tempImgFile = File(tempImgUri.path)
+        val tempImgFile = File(tempImgUri.path ?: "")
         if (tempImgFile.exists()) {
             val bitmap = Util.getBitmap(this, tempImgUri)
             imageProfile.setImageBitmap(bitmap)
@@ -173,13 +195,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getSelectedGender(group: RadioGroup): String {
-        return when (group.checkedRadioButtonId) {
+    private fun getSelectedGender(group: RadioGroup): String =
+        when (group.checkedRadioButtonId) {
             R.id.radioButtonMale -> "Male"
             R.id.radioButtonFemale -> "Female"
             else -> ""
         }
-    }
 
     private fun setRadioGroupSelection(group: RadioGroup, gender: String?) {
         when (gender) {
@@ -190,7 +211,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openGallery() {
-        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        val galleryIntent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         galleryLauncher.launch(galleryIntent)
     }
 

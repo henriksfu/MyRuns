@@ -34,12 +34,23 @@
         android:layout_toStartOf="@id/delete_button"
         android:layout_marginEnd="8dp" />
 
+    <!-- 🌟 NEW: View Map Button (required by EntryActivity.kt) -->
+    <Button
+        android:id="@+id/view_map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Map"
+        android:layout_below="@id/delete_button"
+        android:layout_marginTop="12dp"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" /> <!-- Default hidden until GPS entry is present -->
+
     <!-- Entry Details Section -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@id/my_runs_text"
+        android:layout_below="@id/view_map_button"
         android:paddingHorizontal="15dp"
         android:paddingTop="8dp">
 

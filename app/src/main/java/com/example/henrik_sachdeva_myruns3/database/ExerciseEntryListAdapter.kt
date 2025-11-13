@@ -30,27 +30,35 @@ class ExerciseEntryListAdapter(
     class EntryViewHolder(itemView: View, private val unitPref: String) :
         RecyclerView.ViewHolder(itemView) {
 
-        private val entryText: TextView = itemView.findViewById(R.id.tv_entry)
+        // your actual layout uses tv_entry NOT tv_line1/tv_line2
+        private val tvEntry: TextView = itemView.findViewById(R.id.tv_entry)
 
         fun bind(entry: ExerciseEntry) {
-            val date = entry.getFormattedDateTime()
-            val entryType = entry.getEntryTypeString()
-            val activity = entry.getActivityTypeString()
-            val duration = entry.getFormattedDuration()
 
-            // Convert miles → km only when user preference says Metric
-            val distanceText = if (unitPref == "Imperial" || unitPref == "Miles") {
-                String.format("%.2f Miles", entry.distance)
+            // Line 1
+            val activity = entry.getActivityTypeString()
+            val date = entry.formattedDateTime()
+
+            // Distance
+            val distanceKm = entry.distance
+            val distanceStr = if (unitPref == "Miles" || unitPref == "Imperial") {
+                val miles = distanceKm / 1.60934
+                String.format("%.2f Miles", miles)
             } else {
-                val km = entry.distance * 1.60934
-                String.format("%.2f Kilometers", km)
+                String.format("%.2f Kilometers", distanceKm)
             }
 
-            entryText.text =
-                "$entryType, $activity, $date\n$distanceText, $duration"
+            // Duration
+            val durationStr = entry.formattedDuration()
+
+            // Combine into single TextView (like MyRuns4)
+            val fullText = """
+                $activity, $date
+                $distanceStr, $durationStr
+            """.trimIndent()
+
+            tvEntry.text = fullText
         }
-
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EntryViewHolder {

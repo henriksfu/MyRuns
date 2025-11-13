@@ -1,9 +1,11 @@
-package com.example.henrik_sachdeva_myruns3.database
+package com.example.henrik_sachdeva_myruns3
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.henrik_sachdeva_myruns3.database.ExerciseEntry
+import com.example.henrik_sachdeva_myruns3.database.ExerciseRepository
 import kotlinx.coroutines.launch
 
 /**

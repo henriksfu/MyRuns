@@ -8,33 +8,33 @@ import androidx.room.TypeConverters
 
 @Database(
     entities = [ExerciseEntry::class],
-    version = 2,                 // ⭐ UPDATED VERSION
+    version = 4,            // 🔥 bump version again to avoid cache issues
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class ExerciseEntryDatabase : RoomDatabase() {
 
-    abstract val exerciseEntryDatabaseDao: ExerciseEntryDatabaseDao
+    abstract fun exerciseEntryDatabaseDao(): ExerciseEntryDatabaseDao
 
     companion object {
+
         @Volatile
         private var INSTANCE: ExerciseEntryDatabase? = null
 
         fun getInstance(context: Context): ExerciseEntryDatabase {
-            synchronized(this) {
-                var instance = INSTANCE
-                if (instance == null) {
-                    instance = Room.databaseBuilder(
-                        context.applicationContext,
-                        ExerciseEntryDatabase::class.java,
-                        "exercise_database"
-                    )
-                        .fallbackToDestructiveMigration() // ⭐ IMPORTANT FOR VERSION CHANGE
-                        .build()
+            return INSTANCE ?: synchronized(this) {
 
-                    INSTANCE = instance
-                }
-                return instance!!
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    ExerciseEntryDatabase::class.java,
+                    "exercise_database"
+                )
+                    // 🔥 Prevent crashes when schema changes
+                    .fallbackToDestructiveMigration()
+                    .build()
+
+                INSTANCE = instance
+                instance
             }
         }
     }

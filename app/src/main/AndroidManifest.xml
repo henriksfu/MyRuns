@@ -2,19 +2,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Required for Google Maps -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- ========================================================= -->
+    <!--                  REQUIRED PERMISSIONS                     -->
+    <!-- ========================================================= -->
 
-    <!-- From MyRuns camera + storage -->
+    <!-- Location for GPS tracking -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <!-- Internet for maps -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Camera + Storage (from MyRuns) -->
     <uses-feature android:name="android.hardware.camera" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
+    <!-- ⭐ REQUIRED for running TrackingService as a foreground service ⭐ -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+
+    <!-- ========================================================= -->
+    <!--                        APPLICATION                        -->
+    <!-- ========================================================= -->
 
     <application
         android:allowBackup="true"
@@ -32,26 +43,25 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <!-- Main launcher activity -->
+        <!-- Main launcher Activity -->
         <activity
             android:name=".TabMainActivity"
             android:exported="true"
             android:label="myruns3"
             android:theme="@style/Theme.myruns3.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-        <activity android:name=".MainActivity" />
-        <activity android:name=".ManualEntryActivity" />
-        <activity android:name=".EntryActivity" />
+        <!-- Other Activities -->
+        <activity android:name=".MainActivity"/>
+        <activity android:name=".ManualEntryActivity"/>
+        <activity android:name=".EntryActivity"/>
+        <activity android:name=".MapActivity"/>
 
-        <!-- Updated Map Activity (MyRuns4 GPS activity) -->
-        <activity android:name=".MapActivity" />
-
-        <!-- File provider for photo saving -->
+        <!-- FileProvider -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.henrik_sachdeva_myruns3.fileprovider"
@@ -59,8 +69,19 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
+                android:resource="@xml/file_paths"/>
         </provider>
+
+        <!-- ========================================================= -->
+        <!--                     TRACKING SERVICE                      -->
+        <!-- ========================================================= -->
+        <service
+            android:name=".TrackingService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+        <!-- This is the single most important line for GPS tracking -->
+        <!-- Without this service, GPS NEVER works -->
 
     </application>
 
