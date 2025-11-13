@@ -1,4 +1,4 @@
-package com.example.henrik_sachdeva_myruns3.database
+package com.example.henrik_sachdeva_myruns4.database
 
 import android.content.Context
 import androidx.room.Database
@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 
 @Database(
     entities = [ExerciseEntry::class],
-    version = 4,            // 🔥 bump version again to avoid cache issues
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -21,16 +21,15 @@ abstract class ExerciseEntryDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: ExerciseEntryDatabase? = null
 
+        // Singleton DB instance
         fun getInstance(context: Context): ExerciseEntryDatabase {
             return INSTANCE ?: synchronized(this) {
-
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     ExerciseEntryDatabase::class.java,
                     "exercise_database"
                 )
-                    // 🔥 Prevent crashes when schema changes
-                    .fallbackToDestructiveMigration()
+                    .fallbackToDestructiveMigration() // handle schema changes safely
                     .build()
 
                 INSTANCE = instance

@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.henrik_sachdeva_myruns3"
+    namespace = "com.example.henrik_sachdeva_myruns4"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.henrik_sachdeva_myruns3"
+        applicationId = "com.example.henrik_sachdeva_myruns4"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

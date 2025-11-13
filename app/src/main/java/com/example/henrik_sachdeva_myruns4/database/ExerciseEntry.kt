@@ -1,8 +1,9 @@
-package com.example.henrik_sachdeva_myruns3.database
+package com.example.henrik_sachdeva_myruns4.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 @Entity(tableName = "exercise_table")
 data class ExerciseEntry(
@@ -15,32 +16,34 @@ data class ExerciseEntry(
 
     var dateTime: Date = Date(),
 
-    var duration: Int = 0,            // seconds
-    var distance: Double = 0.0,       // km
-    var avgSpeed: Double = 0.0,       // km/h
-    var currentSpeed: Double = 0.0,   // km/h
+    var duration: Int = 0,          // seconds
+    var distance: Double = 0.0,     // km
+    var avgSpeed: Double = 0.0,     // km/h
+    var currentSpeed: Double = 0.0, // km/h
     var calories: Int = 0,
     var heartRate: Int = 0,
 
     var comment: String = "",
-
-    // ⭐ GPS path stored as JSON string instead of MutableList<LatLng>
     var gpsJson: String = "[]"
 ) {
 
+    // Formatted date/time string
     fun formattedDateTime(): String {
-        return java.text.SimpleDateFormat(
+        val format = java.text.SimpleDateFormat(
             "EEE, MMM d, yyyy h:mm a",
             Locale.getDefault()
-        ).format(dateTime)
+        )
+        return format.format(dateTime)
     }
 
+    // Duration as "mins secs"
     fun formattedDuration(): String {
         val mins = duration / 60
         val secs = duration % 60
         return "$mins mins $secs secs"
     }
 
+    // Input type label
     fun getEntryTypeString(): String {
         return when (inputType) {
             INPUT_TYPE_MANUAL -> "Manual Entry"
@@ -50,6 +53,7 @@ data class ExerciseEntry(
         }
     }
 
+    // Activity type label
     fun getActivityTypeString(): String {
         return when (activityType) {
             0 -> "Running"

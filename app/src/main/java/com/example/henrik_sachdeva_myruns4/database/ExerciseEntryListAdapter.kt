@@ -1,4 +1,4 @@
-package com.example.henrik_sachdeva_myruns3.database
+package com.example.henrik_sachdeva_myruns4.database
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -10,7 +10,7 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.henrik_sachdeva_myruns3.R
+import com.example.henrik_sachdeva_myruns4.R
 
 interface OnEntryClickListener {
     fun onEntryClick(entry: ExerciseEntry)
@@ -27,19 +27,17 @@ class ExerciseEntryListAdapter(
     private val unitPref: String =
         sharedPrefs.getString("unit_preference", "Miles") ?: "Miles"
 
-    class EntryViewHolder(itemView: View, private val unitPref: String) :
-        RecyclerView.ViewHolder(itemView) {
+    class EntryViewHolder(
+        itemView: View,
+        private val unitPref: String
+    ) : RecyclerView.ViewHolder(itemView) {
 
-        // your actual layout uses tv_entry NOT tv_line1/tv_line2
         private val tvEntry: TextView = itemView.findViewById(R.id.tv_entry)
 
         fun bind(entry: ExerciseEntry) {
-
-            // Line 1
             val activity = entry.getActivityTypeString()
             val date = entry.formattedDateTime()
 
-            // Distance
             val distanceKm = entry.distance
             val distanceStr = if (unitPref == "Miles" || unitPref == "Imperial") {
                 val miles = distanceKm / 1.60934
@@ -48,15 +46,9 @@ class ExerciseEntryListAdapter(
                 String.format("%.2f Kilometers", distanceKm)
             }
 
-            // Duration
             val durationStr = entry.formattedDuration()
 
-            // Combine into single TextView (like MyRuns4)
-            val fullText = """
-                $activity, $date
-                $distanceStr, $durationStr
-            """.trimIndent()
-
+            val fullText = "$activity, $date\n$distanceStr, $durationStr"
             tvEntry.text = fullText
         }
     }

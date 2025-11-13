@@ -1,4 +1,4 @@
-package com.example.henrik_sachdeva_myruns3
+package com.example.henrik_sachdeva_myruns4
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,7 +17,7 @@ class StartFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         val view = inflater.inflate(R.layout.fragment_start, container, false)
 
@@ -25,9 +25,7 @@ class StartFragment : Fragment() {
         activityTypeSpinner = view.findViewById(R.id.spinner_activity_type)
 
         val startButton: Button = view.findViewById(R.id.start_button)
-
         startButton.setOnClickListener {
-
             val inputType = inputTypeSpinner.selectedItem.toString()
             val activityType = activityTypeSpinner.selectedItemPosition
 
@@ -38,4 +36,3 @@ class StartFragment : Fragment() {
         return view
     }
 }
-

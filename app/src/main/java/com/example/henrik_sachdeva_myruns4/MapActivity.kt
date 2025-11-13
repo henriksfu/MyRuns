@@ -1,4 +1,4 @@
-package com.example.henrik_sachdeva_myruns3
+package com.example.henrik_sachdeva_myruns4
 
 import android.Manifest
 import android.content.ComponentName
@@ -14,8 +14,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.henrik_sachdeva_myruns3.database.ExerciseEntry
-import com.example.henrik_sachdeva_myruns3.database.ExerciseEntryDatabase
+import com.example.henrik_sachdeva_myruns4.database.ExerciseEntry
+import com.example.henrik_sachdeva_myruns4.database.ExerciseEntryDatabase
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -43,19 +43,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private var trackingService: TrackingService? = null
     private var bound = false
 
-    // -------------------------------------------------------------
-    // ServiceConnection for TrackingService
-    // -------------------------------------------------------------
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(component: ComponentName?, binder: IBinder?) {
             val b = binder as TrackingService.LocalBinder
             trackingService = b.getService()
             bound = true
 
-            // Live GPS updates from the service
-            trackingService!!.liveEntry.observe(
-                this@MapActivity
-            ) { entry -> updateLiveUI(entry) }
+            trackingService!!.liveEntry.observe(this@MapActivity) { entry ->
+                updateLiveUI(entry)
+            }
         }
 
         override fun onServiceDisconnected(component: ComponentName?) {
@@ -64,9 +60,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    // -------------------------------------------------------------
-    // onCreate
-    // -------------------------------------------------------------
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
@@ -76,8 +69,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         statusText = findViewById(R.id.type_stats)
         deleteButton = findViewById(R.id.deleteButton)
 
-
-        // Default stats text
         statusText.text = """
             Activity:
             Avg Speed: 0.00 km/h
@@ -96,16 +87,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFrag.getMapAsync(this)
 
         cancelButton.setOnClickListener { finish() }
+        setupSaveButton()
 
-        // ----- SAVE BUTTON: directly save to Room -----
+        requestLocationPermission()
+    }
+
+    private fun setupSaveButton() {
         saveButton.setOnClickListener {
             if (!isHistoryMode && trackingService != null) {
                 val entry = trackingService!!.getFinalEntry()
 
-                // Insert directly into Room on a background thread
                 Thread {
-                    val dao = ExerciseEntryDatabase
-                        .getInstance(this)
+                    val dao = ExerciseEntryDatabase.getInstance(this)
                         .exerciseEntryDatabaseDao()
                     dao.insertEntry(entry)
                 }.start()
@@ -115,28 +108,21 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 Toast.makeText(this, "No GPS data to save", Toast.LENGTH_SHORT).show()
             }
 
-            // We no longer rely on an Activity result; DB insert is enough
-            setResult(RESULT_OK)   // harmless; TabMainActivity may or may not care
+            setResult(RESULT_OK)
             finish()
         }
-
-        requestLocationPermission()
     }
 
-    // -------------------------------------------------------------
-    // Bind / unbind service
-    // -------------------------------------------------------------
     override fun onStart() {
         super.onStart()
 
         if (!isHistoryMode) {
-            val i = Intent(this, TrackingService::class.java)
-            i.putExtra("inputType", intent.getIntExtra("inputType", 0))
-            i.putExtra("activityType", intent.getIntExtra("activityType", 0))
+            val i = Intent(this, TrackingService::class.java).apply {
+                putExtra("inputType", intent.getIntExtra("inputType", 0))
+                putExtra("activityType", intent.getIntExtra("activityType", 0))
+            }
 
-            // Start as foreground service in a backward-compatible way
             ContextCompat.startForegroundService(this, i)
-
             bindService(i, connection, BIND_AUTO_CREATE)
         }
     }
@@ -149,9 +135,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    // -------------------------------------------------------------
-    // OnMapReadyCallback implementation
-    // -------------------------------------------------------------
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
@@ -161,7 +144,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 .width(12f)
         )
 
-        // Show user's current location
+        enableUserLocation()
+
+        if (isHistoryMode) {
+            loadHistoryEntry()
+        }
+    }
+
+    private fun enableUserLocation() {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -169,40 +159,23 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         ) {
             map.isMyLocationEnabled = true
 
-            val fusedClient = LocationServices.getFusedLocationProviderClient(this)
-            fusedClient.lastLocation.addOnSuccessListener { loc ->
+            val client = LocationServices.getFusedLocationProviderClient(this)
+            client.lastLocation.addOnSuccessListener { loc ->
                 if (loc != null) {
-                    val user = LatLng(loc.latitude, loc.longitude)
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(user, 17f))
+                    val pos = LatLng(loc.latitude, loc.longitude)
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 17f))
                 }
             }
         }
-
-        // If we opened in history mode, load saved entry
-        if (isHistoryMode) {
-            loadHistoryEntry()
-        }
     }
 
-    // -------------------------------------------------------------
-    // LIVE UPDATES from TrackingService
-    // -------------------------------------------------------------
     private fun updateLiveUI(entry: ExerciseEntry?) {
         entry ?: return
 
-        val pts: List<LatLng> =
-            if (!entry.gpsJson.isNullOrEmpty()) {
-                val type = object : TypeToken<List<LatLng>>() {}.type
-                Gson().fromJson(entry.gpsJson, type)
-            } else {
-                emptyList()
-            }
-
+        val pts = parsePoints(entry.gpsJson)
         if (pts.isNotEmpty()) {
             polyline.points = pts
-            map.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(pts.last(), 17f)
-            )
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(pts.last(), 17f))
         }
 
         val stats = """
@@ -219,13 +192,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         )
 
         statusText.text = stats
-
     }
 
-
-    // -------------------------------------------------------------
-    // HISTORY MODE — load entry from Room
-    // -------------------------------------------------------------
     private fun loadHistoryEntry() {
         saveButton.visibility = View.GONE
         deleteButton.visibility = View.VISIBLE
@@ -233,10 +201,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         deleteButton.setOnClickListener {
             val dao = ExerciseEntryDatabase.getInstance(this).exerciseEntryDatabaseDao()
-
             Thread {
                 dao.deleteEntry(entryId)
-
                 runOnUiThread {
                     Toast.makeText(this, "Entry deleted", Toast.LENGTH_SHORT).show()
                     finish()
@@ -244,21 +210,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }.start()
         }
 
-
         val dao = ExerciseEntryDatabase.getInstance(this).exerciseEntryDatabaseDao()
 
         Thread {
             val entry = dao.getEntryNow(entryId)
 
             runOnUiThread {
-                val pts: List<LatLng> =
-                    if (!entry.gpsJson.isNullOrEmpty()) {
-                        val type = object : TypeToken<List<LatLng>>() {}.type
-                        Gson().fromJson(entry.gpsJson, type)
-                    } else {
-                        emptyList()
-                    }
-
+                val pts = parsePoints(entry.gpsJson)
                 polyline.points = pts
 
                 if (pts.isNotEmpty()) {
@@ -279,15 +237,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }.start()
     }
 
-    // -------------------------------------------------------------
-    // LOCATION PERMISSION
-    // -------------------------------------------------------------
+    private fun parsePoints(json: String?): List<LatLng> {
+        if (json.isNullOrEmpty()) return emptyList()
+        val type = object : TypeToken<List<LatLng>>() {}.type
+        return Gson().fromJson(json, type)
+    }
+
     private fun requestLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        val granted = ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!granted) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),

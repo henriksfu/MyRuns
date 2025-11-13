@@ -1,4 +1,4 @@
-package com.example.henrik_sachdeva_myruns3
+package com.example.henrik_sachdeva_myruns4
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -9,7 +9,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.example.henrik_sachdeva_myruns3.database.*
+import com.example.henrik_sachdeva_myruns4.database.*
 import java.util.Calendar
 
 class ManualEntryActivity : AppCompatActivity() {
@@ -18,13 +18,12 @@ class ManualEntryActivity : AppCompatActivity() {
         "Date", "Time", "Duration", "Distance", "Calories", "Heart Rate", "Comment"
     )
 
-    private lateinit var myListView: ListView
+    private lateinit var listView: ListView
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
-
     private lateinit var viewModel: ExerciseViewModel
 
-    private val selectedDateTime: Calendar = Calendar.getInstance()
+    private val selectedDateTime = Calendar.getInstance()
 
     private var duration: Double? = null
     private var distance: Double? = null
@@ -36,24 +35,33 @@ class ManualEntryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manual_entry)
 
-        myListView = findViewById(R.id.myListView)
+        bindViews()
+        initViewModel()
+        setupList()
+        setupButtons()
+    }
+
+    private fun bindViews() {
+        listView = findViewById(R.id.myListView)
         saveButton = findViewById(R.id.saveButton)
         cancelButton = findViewById(R.id.cancelButton)
+    }
 
-        // Initialize Room + ViewModel
-        val db = ExerciseEntryDatabase.getInstance(this)
-        val dao = db.exerciseEntryDatabaseDao()
+    private fun initViewModel() {
+        val dao = ExerciseEntryDatabase.getInstance(this).exerciseEntryDatabaseDao()
         val repo = ExerciseRepository(dao)
         val factory = ExerciseViewModelFactory(repo)
         viewModel = ViewModelProvider(this, factory)[ExerciseViewModel::class.java]
+    }
 
-        myListView.adapter =
-            ArrayAdapter(this, android.R.layout.simple_list_item_1, infoItems)
+    private fun setupList() {
+        listView.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_list_item_1,
+            infoItems
+        )
 
-        cancelButton.setOnClickListener { finish() }
-        saveButton.setOnClickListener { saveEntry() }
-
-        myListView.setOnItemClickListener { _, _, position, _ ->
+        listView.setOnItemClickListener { _, _, position, _ ->
             when (position) {
                 0 -> showDatePickerDialog()
                 1 -> showTimePickerDialog()
@@ -66,28 +74,29 @@ class ManualEntryActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveEntry() {
+    private fun setupButtons() {
+        cancelButton.setOnClickListener { finish() }
+        saveButton.setOnClickListener { saveEntry() }
+    }
 
-        val selectedActivityTypeId =
+    private fun saveEntry() {
+        val activityType =
             intent.getIntExtra("SELECTED_ACTIVITY_TYPE_ID", -1)
 
-        val newEntry = ExerciseEntry(
+        val entry = ExerciseEntry(
             id = 0L,
             inputType = ExerciseEntry.INPUT_TYPE_MANUAL,
-            activityType = selectedActivityTypeId,
+            activityType = activityType,
             dateTime = selectedDateTime.time,
-
-            duration = (duration ?: 0.0).toInt(),    // FIXED: now Int
-            distance = distance ?: 0.0,              // stays Double
-
-            calories = calories ?: 0,                // FIXED: Int
-            heartRate = (heartRate ?: 0),              // FIXED: Int
-
+            duration = (duration ?: 0.0).toInt(),
+            distance = distance ?: 0.0,
+            calories = calories ?: 0,
+            heartRate = heartRate ?: 0,
             comment = comment ?: ""
         )
 
         try {
-            viewModel.insertEntry(newEntry)
+            viewModel.insertEntry(entry)
             Toast.makeText(this, "Entry saved", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Log.e("ManualEntryActivity", "Error saving entry: ${e.message}")
@@ -125,19 +134,20 @@ class ManualEntryActivity : AppCompatActivity() {
 
     private fun showEditNumberDialog(title: String) {
         val input = EditText(this).apply {
-            inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+            inputType =
+                InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         }
 
         AlertDialog.Builder(this)
             .setTitle(title)
             .setView(input)
             .setPositiveButton("OK") { _, _ ->
-                val value = input.text.toString()
+                val text = input.text.toString()
                 when (title) {
-                    "Duration" -> duration = value.toDoubleOrNull()
-                    "Distance" -> distance = value.toDoubleOrNull()
-                    "Calories" -> calories = value.toIntOrNull()
-                    "Heart Rate" -> heartRate = value.toIntOrNull()
+                    "Duration" -> duration = text.toDoubleOrNull()
+                    "Distance" -> distance = text.toDoubleOrNull()
+                    "Calories" -> calories = text.toIntOrNull()
+                    "Heart Rate" -> heartRate = text.toIntOrNull()
                 }
             }
             .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
@@ -151,8 +161,7 @@ class ManualEntryActivity : AppCompatActivity() {
             .setTitle(title)
             .setView(input)
             .setPositiveButton("OK") { _, _ ->
-                val value = input.text.toString()
-                comment = value
+                comment = input.text.toString()
             }
             .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
             .show()

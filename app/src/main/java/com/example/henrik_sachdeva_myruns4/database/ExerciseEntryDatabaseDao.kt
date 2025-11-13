@@ -1,4 +1,4 @@
-package com.example.henrik_sachdeva_myruns3.database
+package com.example.henrik_sachdeva_myruns4.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
@@ -18,7 +18,7 @@ interface ExerciseEntryDatabaseDao {
     fun getEntryWithId(entryId: Long): LiveData<ExerciseEntry>
 
     @Query("SELECT * FROM exercise_table WHERE id = :entryId LIMIT 1")
-    fun getEntryNow(entryId: Long): ExerciseEntry     // ⚠️ Used in history mode
+    fun getEntryNow(entryId: Long): ExerciseEntry
 
     @Query("DELETE FROM exercise_table WHERE id = :entryId")
     fun deleteEntry(entryId: Long)

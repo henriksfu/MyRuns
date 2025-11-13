@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
-    <!-- Profile Section -->
+    <!-- Profile -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,18 +27,17 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginEnd="10dp"
-            android:contentDescription="Profile picture"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:contentDescription="Profile picture" />
 
         <Button
             android:id="@+id/photoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Change"
-            android:layout_gravity="center" />
+            android:text="Change" />
     </LinearLayout>
 
-    <!-- Info Fields -->
+    <!-- Fields -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -51,7 +49,6 @@
             android:orientation="vertical"
             android:paddingBottom="8dp">
 
-            <!-- Name -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -64,7 +61,6 @@
                 android:hint="e.g. John Doe"
                 android:inputType="textPersonName" />
 
-            <!-- Email -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -77,7 +73,6 @@
                 android:hint="e.g. johndoe@hotmail.com"
                 android:inputType="textEmailAddress" />
 
-            <!-- Phone -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -90,7 +85,6 @@
                 android:hint="Your phone number"
                 android:inputType="phone" />
 
-            <!-- Gender -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -113,11 +107,10 @@
                     android:id="@+id/radioButtonFemale"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Female"
-                    android:layout_marginStart="24dp" />
+                    android:layout_marginStart="24dp"
+                    android:text="Female" />
             </RadioGroup>
 
-            <!-- Class -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -130,7 +123,6 @@
                 android:hint="e.g. 2024"
                 android:inputType="number" />
 
-            <!-- Major -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -142,6 +134,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Your major"
                 android:inputType="text" />
+
         </LinearLayout>
     </ScrollView>
 
@@ -167,4 +160,5 @@
             android:layout_margin="8dp"
             android:text="Cancel" />
     </LinearLayout>
+
 </LinearLayout>

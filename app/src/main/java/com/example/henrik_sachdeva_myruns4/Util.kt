@@ -1,4 +1,4 @@
-package com.example.henrik_sachdeva_myruns3
+package com.example.henrik_sachdeva_myruns4
 
 import android.Manifest
 import android.app.Activity
@@ -12,28 +12,22 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-/**
- * Utility object for permission handling and bitmap operations.
- */
 object Util {
 
-    /**
-     * Checks and requests camera and storage permissions if not already granted.
-     */
     fun checkPermissions(activity: Activity?) {
         if (activity == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
 
-        val hasWritePermission = ContextCompat.checkSelfPermission(
+        val writeGranted = ContextCompat.checkSelfPermission(
             activity,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED
 
-        val hasCameraPermission = ContextCompat.checkSelfPermission(
+        val cameraGranted = ContextCompat.checkSelfPermission(
             activity,
             Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
 
-        if (!hasWritePermission || !hasCameraPermission) {
+        if (!writeGranted || !cameraGranted) {
             ActivityCompat.requestPermissions(
                 activity,
                 arrayOf(
@@ -45,13 +39,9 @@ object Util {
         }
     }
 
-    /**
-     * Loads a bitmap from the given image URI.
-     * Returns a correctly oriented bitmap if rotation is required.
-     */
     fun getBitmap(context: Context, imgUri: Uri): Bitmap {
-        val inputStream = context.contentResolver.openInputStream(imgUri)
-        val bitmap = BitmapFactory.decodeStream(inputStream)
+        val stream = context.contentResolver.openInputStream(imgUri)
+        val bitmap = BitmapFactory.decodeStream(stream)
         val matrix = Matrix()
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }

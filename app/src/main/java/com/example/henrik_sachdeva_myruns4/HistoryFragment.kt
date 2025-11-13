@@ -1,4 +1,4 @@
-package com.example.henrik_sachdeva_myruns3
+package com.example.henrik_sachdeva_myruns4
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.henrik_sachdeva_myruns3.database.*
+import com.example.henrik_sachdeva_myruns4.database.*
 
 class HistoryFragment : Fragment(), OnEntryClickListener {
 
@@ -18,15 +18,17 @@ class HistoryFragment : Fragment(), OnEntryClickListener {
     private lateinit var viewModel: ExerciseViewModel
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
 
         val view = inflater.inflate(R.layout.fragment_history, container, false)
         val recycler = view.findViewById<RecyclerView>(R.id.recycler_view)
 
-        // FIX: call the DAO getter as a function
-        val dao = ExerciseEntryDatabase.getInstance(requireContext()).exerciseEntryDatabaseDao()
+        val dao = ExerciseEntryDatabase
+            .getInstance(requireContext())
+            .exerciseEntryDatabaseDao()
 
         val repo = ExerciseRepository(dao)
         val factory = ExerciseViewModelFactory(repo)
@@ -36,7 +38,6 @@ class HistoryFragment : Fragment(), OnEntryClickListener {
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
-        // Observe database updates
         viewModel.allEntries.observe(viewLifecycleOwner) { list ->
             adapter.submitList(list)
         }
@@ -48,19 +49,22 @@ class HistoryFragment : Fragment(), OnEntryClickListener {
         Log.d("HistoryFragment", "Clicked entry: ${entry.id}")
 
         when (entry.inputType) {
-
             ExerciseEntry.INPUT_TYPE_MANUAL -> {
-                val intent = Intent(requireContext(), EntryActivity::class.java)
-                intent.putExtra("ENTRY_ID", entry.id)
-                startActivity(intent)
+                startActivity(
+                    Intent(requireContext(), EntryActivity::class.java).apply {
+                        putExtra("ENTRY_ID", entry.id)
+                    }
+                )
             }
 
             ExerciseEntry.INPUT_TYPE_GPS,
             ExerciseEntry.INPUT_TYPE_AUTOMATIC -> {
-                val intent = Intent(requireContext(), MapActivity::class.java)
-                intent.putExtra("mode", "history")
-                intent.putExtra("entry_id", entry.id)
-                startActivity(intent)
+                startActivity(
+                    Intent(requireContext(), MapActivity::class.java).apply {
+                        putExtra("mode", "history")
+                        putExtra("entry_id", entry.id)
+                    }
+                )
             }
         }
     }
