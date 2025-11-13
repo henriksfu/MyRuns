@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme (Material 3 with Day/Night support) -->
+    <style name="Base.Theme.myruns3" parent="Theme.Material3.DayNight.NoActionBar">
+    </style>
+
+    <!-- Default app theme (inherits from Base) -->
+    <style name="Theme.myruns3" parent="Base.Theme.myruns3" />
+
+    <!-- No Action Bar variant (for fullscreen or custom toolbar use) -->
+    <style name="Theme.myruns3.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- AppBar overlay for ActionBar styling (if used in fragments/activities) -->
+    <style name="Theme.myruns3.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <!-- Popup overlay (for dialogs, menus, etc.) -->
+    <style name="Theme.myruns3.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+</resources>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EntryActivity">
+
+    <!-- Header Title -->
+    <TextView
+        android:id="@+id/my_runs_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="myruns3"
+        android:textSize="20sp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Action Buttons -->
+    <Button
+        android:id="@+id/delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="8dp" />
+
+    <Button
+        android:id="@+id/cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:layout_toStartOf="@id/delete_button"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Entry Details Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/my_runs_text"
+        android:paddingHorizontal="15dp"
+        android:paddingTop="8dp">
+
+        <!-- Input Type -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Input Type" />
+
+        <TextView
+            android:id="@+id/tv_entry_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Input Type"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Activity Type -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Activity Type" />
+
+        <TextView
+            android:id="@+id/tv_activity_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Activity Type"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Date and Time -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Date and Time" />
+
+        <TextView
+            android:id="@+id/tv_date_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Date and Time"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Duration -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Duration" />
+
+        <TextView
+            android:id="@+id/tv_duration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Duration"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Distance -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Distance" />
+
+        <TextView
+            android:id="@+id/tv_distance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Distance"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Calories -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Calories" />
+
+        <TextView
+            android:id="@+id/tv_calories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Calories"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Heart Rate -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Heart Rate" />
+
+        <TextView
+            android:id="@+id/tv_heart_rate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Heart Rate"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp" />
+    </LinearLayout>
+</RelativeLayout>

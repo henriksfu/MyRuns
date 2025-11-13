@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".StartFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center_horizontal">
+
+        <!-- Input Type Label -->
+        <TextView
+            android:id="@+id/input_type_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Input Type"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Input Type Spinner -->
+        <Spinner
+            android:id="@+id/input_type_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/ui_input_type_spinner"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Activity Type Label -->
+        <TextView
+            android:id="@+id/activity_type_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Activity Type"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Activity Type Spinner -->
+        <Spinner
+            android:id="@+id/activity_type_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/ui_activity_type_spinner"
+            android:layout_marginBottom="48dp" />
+
+        <!-- Start Button -->
+        <Button
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:text="START"
+            android:textAllCaps="true"
+            android:onClick="onStartButtonClicked"
+            android:layout_gravity="center"
+            android:layout_marginTop="60dp" />
+
+    </LinearLayout>
+</FrameLayout>

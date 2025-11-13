@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Account Preferences -->
+    <PreferenceCategory android:title="Account Preferences">
+
+        <!-- User Profile -->
+        <Preference
+            android:key="user_profile"
+            android:title="User Profile"
+            android:summary="Name, Email, Class, etc."
+            android:icon="@android:drawable/ic_menu_myplaces"
+            android:widgetLayout="@null"
+            android:background="?android:attr/selectableItemBackground" />
+
+        <!-- Privacy Setting -->
+        <Preference
+            android:key="privacy_setting"
+            android:title="Privacy Setting"
+            android:summary="Post your records anonymously"
+            android:widgetLayout="@layout/preference_checkbox"
+            android:background="?android:attr/selectableItemBackground" />
+
+    </PreferenceCategory>
+
+    <!-- Additional Preferences -->
+    <PreferenceCategory android:title="Additional Preferences">
+
+        <!-- Unit Preference -->
+        <Preference
+            android:key="unit_preference"
+            android:title="Unit Preference"
+            android:summary="Choose between Metric or Imperial"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:background="?android:attr/selectableItemBackground" />
+
+        <!-- Comments -->
+        <Preference
+            android:key="comments"
+            android:title="Comments"
+            android:summary="Add a note or feedback"
+            android:icon="@android:drawable/ic_menu_edit"
+            android:background="?android:attr/selectableItemBackground" />
+
+    </PreferenceCategory>
+
+    <!-- Misc -->
+    <PreferenceCategory android:title="Miscellaneous">
+
+        <!-- Webpage -->
+        <Preference
+            android:key="webpage"
+            android:title="SFU Computing Science Website"
+            android:summary="https://www.sfu.ca/computing.html"
+            android:icon="@android:drawable/ic_menu_view"
+            android:background="?android:attr/selectableItemBackground" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
